@@ -11,7 +11,7 @@ scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
 get_aurhlpr
 export -f pkg_installed
-fpk_exup="pkg_installed flatpak && flatpak update"
+fpk_exup="pkg_installed flatpak && flatpak update -y"
 temp_file="$XDG_RUNTIME_DIR/hyde/update_info"
 # shellcheck source=/dev/null
 [ -f "$temp_file" ] && source "$temp_file"
@@ -31,11 +31,10 @@ if [ "$1" == "up" ]; then
         done <"$temp_file"
 
         command="
-        fastfetch
         printf '[Official] %-10s\n[AUR]      %-10s\n[Flatpak]  %-10s\n' '$official' '$aur' '$flatpak'
-        "${aurhlpr}" -Syu
+        "${aurhlpr}" -Syu --noconfirm
         $fpk_exup
-        read -n 1 -p 'Press any key to continue...'
+        notify-send 'Updates finished!'
         "
         kitty --title systemupdate sh -c "${command}"
     else
